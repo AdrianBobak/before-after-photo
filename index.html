@@ -40,26 +40,32 @@
     <script>
         const imgs = document.querySelectorAll("img");
         const afterImg = document.querySelector("#after");
-
         const resizer = () => {
             imgs.forEach((img) => {
-                let percentX = window.innerWidth / img.width;
-                let percentY = window.innerHeight / img.height;
+                let set = {
+                    windowWidth: window.innerWidth,
+                    widdowHeight: window.innerHeight,
+                    imgWidth: img.width,
+                    imgHeight: img.height
+                }
+                let percentX = set.windowWidth / set.imgWidth;
+                let percentY = set.widdowHeight / set.imgHeight;
                 if(percentX < percentY){
                     img.style.height = "auto";
-                    img.style.width = window.innerWidth + "px";
-                    img.style.marginTop = ((window.innerHeight - img.height) / 2) + "px";
+                    img.style.width = set.windowWidth + "px";
+                    img.style.marginTop = ((set.widdowHeight - img.height) / 2) + "px";
                     img.style.marginLeft = 0;
                 } else {
-                    img.style.height = window.innerHeight + "px";
+                    img.style.height = set.widdowHeight + "px";
                     img.style.width = "auto";
                     img.style.marginTop = 0;
-                    img.style.marginLeft = ((window.innerWidth - img.width) / 2) + "px";
+                    img.style.marginLeft = ((set.windowWidth - img.width) / 2) + "px";
                 }
             });
         }
         window.addEventListener("load", resizer);
         window.addEventListener("resize", resizer);
+
 
         let isDown = false;
         document.addEventListener("mousedown", (e) => {
@@ -70,38 +76,32 @@
             e.preventDefault();
             isDown = false;
         });
-        document.addEventListener("touchstart", (e) => {
-            isDown = true;
-        });
-        document.addEventListener("touchend", (e) => {
-            isDown = false;
-        });
+        document.addEventListener("touchstart", (e) => isDown = true);
+        document.addEventListener("touchend", (e) => isDown = false);
 
-        const switcher = (e) => {
+
+        const startSwitchDesktop = (e) => {
             e.preventDefault();
-            if(isDown && e.clientX < window.innerWidth ){
+            switcher(e.clientX);
+        }
+        const startSwitchMobile = (e) => {
+            switcher(e.changedTouches[0].clientX);
+        }
+
+        const switcher = (clientX) => {
+            if(isDown && clientX < window.innerWidth ){
                 let margin = parseInt(imgs[0].style.marginLeft);
-                if((e.clientX - margin) < 0){
+                if((clientX - margin) < 0){
                     afterImg.style.width = margin;
-                } else if((e.clientX + margin) > window.innerWidth) afterImg.style.width = (window.innerWidth - margin + 5) + "px";
+                } else if((clientX + margin) > window.innerWidth) afterImg.style.width = (window.innerWidth - margin + 5) + "px";
                 else {
-                    afterImg.style.width = e.clientX + "px";
+                    afterImg.style.width = clientX + "px";
                 }
             }
         }
-        const switcherMobile = (e) => {
-            if(isDown && e.changedTouches[0].clientX < window.innerWidth ){
-                let margin = parseInt(imgs[0].style.marginLeft);
-                if((e.changedTouches[0].clientX - margin) < 0){
-                    afterImg.style.width = margin;
-                } else if((e.changedTouches[0].clientX + margin) > window.innerWidth) afterImg.style.width = (window.innerWidth - margin + 5) + "px";
-                else {
-                    afterImg.style.width = e.changedTouches[0].clientX + "px";
-                }
-            }
-        }
-        document.addEventListener("mousemove", switcher);
-        document.addEventListener("touchmove", switcherMobile);
+
+        document.addEventListener("mousemove", startSwitchDesktop);
+        document.addEventListener("touchmove", startSwitchMobile);
     </script>
 </body>
 </html>
