@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Before-after-photo</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    body, #before, #after {
+        width: 100%;
+        height: 100%;
+    }
+    #before, #after {
+        position: absolute;
+        overflow: hidden;
+    }
+
+    #after::after {
+        content: "";
+        position: absolute;
+        width: 10px;
+        height: 100%;
+        background-color: #fff;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+    }
+</style>
+</head>
+<body>
+    <div id="before" class="container">
+        <img src="01.jpg">
+    </div>
+    <div id="after" style="width: 50%" class="container">
+        <img src="02.jpg">
+    </div>
+    <script>
+        const imgs = document.querySelectorAll("img");
+        const afterImg = document.querySelector("#after");
+
+        const resizer = () => {
+            imgs.forEach((img) => {
+                let percentX = window.innerWidth / img.width;
+                let percentY = window.innerHeight / img.height;
+                if(percentX < percentY){
+                    img.style.height = "auto";
+                    img.style.width = window.innerWidth + "px";
+                    img.style.marginTop = ((window.innerHeight - img.height) / 2) + "px";
+                    img.style.marginLeft = 0;
+                } else {
+                    img.style.height = window.innerHeight + "px";
+                    img.style.width = "auto";
+                    img.style.marginTop = 0;
+                    img.style.marginLeft = ((window.innerWidth - img.width) / 2) + "px";
+                }
+            });
+        }
+        window.addEventListener("load", resizer);
+        window.addEventListener("resize", resizer);
+
+        let isDown = false;
+        document.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            isDown = true;
+        });
+        document.addEventListener("mouseup", (e) => {
+            e.preventDefault();
+            isDown = false;
+        });
+
+        const switcher = (e) => {
+            e.preventDefault();
+            if(isDown && e.clientX < window.innerWidth ){
+                let margin = parseInt(imgs[0].style.marginLeft);
+                if((e.clientX - margin) < 0){
+                    afterImg.style.width = margin;
+                } else if((e.clientX + margin) > window.innerWidth) afterImg.style.width = (window.innerWidth - margin + 5) + "px";
+                else {
+                    afterImg.style.width = e.clientX + "px";
+                }
+            }
+        }
+        document.addEventListener("mousemove", switcher);
+    </script>
+</body>
+</html>
