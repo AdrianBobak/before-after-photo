@@ -70,6 +70,12 @@
             e.preventDefault();
             isDown = false;
         });
+        document.addEventListener("touchstart", (e) => {
+            isDown = true;
+        });
+        document.addEventListener("touchend", (e) => {
+            isDown = false;
+        });
 
         const switcher = (e) => {
             e.preventDefault();
@@ -83,7 +89,19 @@
                 }
             }
         }
+        const switcherMobile = (e) => {
+            if(isDown && e.changedTouches[0].clientX < window.innerWidth ){
+                let margin = parseInt(imgs[0].style.marginLeft);
+                if((e.changedTouches[0].clientX - margin) < 0){
+                    afterImg.style.width = margin;
+                } else if((e.changedTouches[0].clientX + margin) > window.innerWidth) afterImg.style.width = (window.innerWidth - margin + 5) + "px";
+                else {
+                    afterImg.style.width = e.changedTouches[0].clientX + "px";
+                }
+            }
+        }
         document.addEventListener("mousemove", switcher);
+        document.addEventListener("touchmove", switcherMobile);
     </script>
 </body>
 </html>
